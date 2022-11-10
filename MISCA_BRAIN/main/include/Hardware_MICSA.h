@@ -1,29 +1,26 @@
 /************************************************************
-*  File Name : main.c
-*  Description: Main file of our esp32-s2 application
+*  File Name : Hardware_MICSA.h
+*  Description: This is the hardware file for MICSA that con-
+*               all the pin definitions for our circuit. 
 *
-*  Author : Jacques Veneziano, Myiah Catwell, Philippe 
-            Rochefort
-*  Date:    09-11-2022 
+*  Author : Jacques Veneziano
+*  Date: 
 ************************************************************/
+#ifndef Hardware_MICSA_H_
+#define Hardware_MICSA_H_
+
 
 /////////////////////////////////////////////////////////////
 //  INCLUDES
 /////////////////////////////////////////////////////////////
-#include "stdlib.h"
-#include "stdio.h"
-#include "stdarg.h"
-#include "unistd.h"
-#include "stdint.h"
-#include "string.h"
-#include "time.h"
-#include "assert.h"
-#include "ctype.h"
-#include "math.h"
+
 
 /////////////////////////////////////////////////////////////
 //  VARIABLES & TYPES DECLARATIONS
 /////////////////////////////////////////////////////////////
+
+
+#define BUTTON_3    18
 
 
 /////////////////////////////////////////////////////////////
@@ -35,7 +32,8 @@
 //  FUNCTION DECLARATION
 /////////////////////////////////////////////////////////////
 
-void app_main(void)
-{
 
-}
+
+
+
+#endif  /* !Hardware_MICSA_H_ */
