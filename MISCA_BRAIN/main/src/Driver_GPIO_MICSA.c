@@ -22,6 +22,7 @@
 #include "ctype.h"
 #include "math.h"
 #include "Driver_GPIO_MICSA.h"
+#include "components/driver/include/driver/gpio.h"
 
 /////////////////////////////////////////////////////////////
 //  VARIABLES & TYPES DECLARATIONS
@@ -40,14 +41,17 @@
 ///////////////////////////////////////////////////////////////
 //   Function name: 
 //   Description: Sert à allouer de la mémoire
-//   à la structure 
-//   
-//   Author: Jacques Veneziano
-//   Returns: Une structure Driver_GPIO initialisée
+//   à la structure Driver_GPIO avec tous les ports initialisé
+//   selon les paramètres fournis
+//
+//   Author: Jacques Veneziano et Philippe Rochefort
+//   Returns: Une structure Driver_GPIO initialisant tous les ports 
+//   selon le mode 
 //                        
 ///////////////////////////////////////////////////////////////
-GPIO_struct_t Driver_GPIO_create_instance(int gpio_port_nb){
+GPIO_struct_t Driver_GPIO_create_instance(gpio_config_t* gpio_instance, int gpio_port_nb){
     
+    //Vérification si le tableau construit est plus grand que 1
     if(gpio_port_nb =< 0){
         printf("Erreur, GPIO_port_nb plus petit ou egale a zero!");
         return NULL; 
@@ -63,38 +67,150 @@ GPIO_struct_t Driver_GPIO_create_instance(int gpio_port_nb){
     nouv_GPIO->instance_number = gpio_port_nb;
 
     //Allocation de mémoire pour la structure de Port 
-    nouv_GPIO->port = (GPIO_port_t*)malloc((nouv_GPIO->instance_number) * sizeof(GPIO_port_t));
+    nouv_GPIO->port = (gpio_config_t*)malloc((nouv_GPIO->instance_number) * sizeof(gpio_config_t));
 
-    //Creation de tous les ports avec le tableau
+    //Creation de tous les ports grâce au tableau de gpio_instance
     for(int i=0; i<gpio_port_nb; i++){
-        nouv_GPIO->port[i] = Port_GPIO_create_instance();
+        nouv_GPIO->port[i] = gpio_instance[i];
     }
-    
+
     //Retour de la structure initialise
     return nouv_GPIO; 
 }
 
-//Initisalisation du tableau de Port
-GPIO_port_t Port_GPIO_create_instance{
-    GPIO_port_t nouv_port;
-    nouv_port = (GPIO_port_t)malloc(sizeof(struct GPIO_Port));
+///////////////////////////////////////////////////////////////
+//   Function name: port_GPIO_create_instance
+//   Description: sert à allouer la mémoire à la 
+//   structure gpio_config_t 
+//   Author: Philippe Rochefort
+//   Returns: gpio_config_t vide
+//                     
+///////////////////////////////////////////////////////////////
+gpio_config_t port_GPIO_create_instance() {
+    gpio_config_t nouv_port;
+    
+    //Allocation de mémoire
+    nouv_port = (gpio_config_t)malloc(sizeof(struct gpio_config));
 
     //Initialiser le port en question
     if (nouv_port){
-        nouv_port.name = NULL; 
-        nouv_port.port_num = NULL;
+        nouv_port.pint_bit_mask = NULL; 
+        nouv_port.gpio_mode_t = NULL;
+        nouv_port.pull_up_en = NULL;
+        nouv_port.pull_down_en = NULL;
+        nouv_port.intr_type = NULL;
     }
 
     //Retour de la structure initialise
     return nouv_port; 
 }
 
+///////////////////////////////////////////////////////////////
+//   Function name: port_GPIO_config_init
+//   Description: sert à créer un port possédant les variables 
+//   demandées (gpio_config_t) 
+//   Author: Philippe Rochefort
+//   Returns: gpio_config_t possédant les variables choisies 
+//                     
+///////////////////////////////////////////////////////////////
+gpio_config_t port_GPIO_config_init(uint64_t pin_position, int MODE, int PUSHPULL_config, int INTERRUPT_TYPE){
+    //Création de la variable acceuillant le port
+    gpio_config_t nouv_port;
+
+    //Allocation de mémoire du port 
+    nouv_port = Port_GPIO_create_instance();
+
+    //Initialisation de chaque valeur dans la structure port 
+    gpio_config_t_set_pin_position(nouv_port, pin_position);
+    gpio_config_t_set_mode(nouv_port, MODE);
+    gpio_config_t_set_intr_type(nouv_port, INTERRUPT_TYPE);
+    gpio_config_t_set_pullpush(nouv_port, PUSHPULL_config);
+
+    //Renvoie la structure initialisé avec les valeurs
+    return nouv_port;
+} 
 
 ///////////////////////////////////////////////////////////////
-//    Function name: Driver_GPIO_write
-//    Description: Sert à écrire dans la structure du GPIO
-//    Reçoit le numéro du port et son nom
+//   Function name: gpio_config_t set functions
+//   Description: Sert à écrire dans la structure du Port (gpio_config_t)
 //   
+//   Author: Philippe Rochefort
+//   Returns: NULL 
+//                     
+///////////////////////////////////////////////////////////////
+void gpio_config_t_set_pin_position(gpio_config_t port, uint64_t pin_position){
+    port->pin_bit_mask = pin_position;
+}
+
+void gpio_config_t_set_mode(gpio_config_t port, int mode){
+    port->mode = mode;
+}
+
+void gpio_config_t_set_pullpush(gpio_config_t port, int PUSHPULL_config){
+        //Définition des deux variables
+    int pull_up;
+    int pull_down; 
+
+    //Établir la configuration selon le code obtenu
+    if(PUSHPULL_config == GPIO_PUSHPULL_PULLUP_MODE){
+        pull_up = 1;
+        pull_down = 0;
+    }
+
+    else if(PUSHPULL_config == GPIO_PUSHPULL_PULLDOWN_MODE){
+        pull_up = 0;
+        pull_down = 1;
+    }
+
+    //Message d'erreur si la configuration n'est pas reconnue
+    else{
+        printf("Erreur! Configuration non reconnu! -> (gpio_config_t_set_pullpush)");
+        return;
+    }
+
+    //Stockage des valeurs recherchés
+    nouv_port.pull_up_en = pull_up;
+    nouv_port.pull_down_en = pull_down;
+}
+
+void gpio_config_t_set_intr_type(gpio_config_t port, int INTERRUPT_TYPE){
+    port->intr_type = INTERRUPT_TYPE;
+}
+
+///////////////////////////////////////////////////////////////
+//   Function name: gpio_config_t get functions
+//   Description: Sert à lire dans la structure du Port (gpio_config_t)
+//
+//   Author: Philippe Rochefort
+//   Returns: NULL 
+//                     
+///////////////////////////////////////////////////////////////
+uint64_t gpio_config_t_get_pin_position(gpio_config_t port){
+    return port->pin_bit_mask;
+}
+
+gpio_mode_t gpio_config_t_get_mode(gpio_config_t port){
+    return port->mode;
+}
+
+gpio_pullup_t gpio_config_t_get_pull_up(gpio_config_t port){
+    return port->pull_up_en;
+}
+
+gpio_pulldown_t gpio_config_t_get_pull_down(gpio_config_t port){
+    return port->pull_down_en;
+}
+
+gpio_int_type_t gpio_config_t_set_intr_type(gpio_config_t port){
+    return port->intr_type;
+}
+
+
+///////////////////////////////////////////////////////////////
+//   Function name: Driver_GPIO_write
+//   Description: Sert à écrire dans la structure du GPIO
+//   Reçoit le numéro du port et son nom
+//
 //   Author: Philippe Rochefort
 //   Returns: NULL 
 //                     
@@ -106,8 +222,8 @@ void Driver_GPIO_write(GPIO_struct_t gpio_instance, int port_number, char* port_
 }
 
 ///////////////////////////////////////////////////////////////
-//    Function name: Driver_GPIO_read_numb(GPIO_struct_t gpio_instance)
-//    Description: Lit et renvoie le nombre de port total dans la structure
+//   Function name: Driver_GPIO_read_numb(GPIO_struct_t gpio_instance)
+//   Description: Lit et renvoie le nombre de port total dans la structure
 //   Author: Jacques Veneziano
 //   Returns: Nombre de Port total
 ///////////////////////////////////////////////////////////////
@@ -118,6 +234,7 @@ int Driver_GPIO_read_numb(GPIO_struct_t gpio_instance){
 ///////////////////////////////////////////////////////////////
 //   Function name: Driver_GPIO_read_inst_numb(GPIO_struct_t gpio_instance)
 //   Description: Lit et renvoie le nombre de port total dans la structure
+//
 //   Author: Philippe Rochefort
 //   Returns: Information sur le nombre de port exacte
 ///////////////////////////////////////////////////////////////
@@ -128,6 +245,7 @@ int Driver_GPIO_read_inst_numb(GPIO_struct_t gpio_instance){
 ///////////////////////////////////////////////////////////////
 //   Function name: Driver_GPIO_read_inst_numb(GPIO_struct_t gpio_instance)
 //   Description: Lit et renvoie le nombre de port total dans la structure
+//
 //   Author: Philippe Rochefort
 //   Returns: Information sur le nombre de port exacte
 ///////////////////////////////////////////////////////////////
@@ -136,40 +254,25 @@ int Driver_GPIO_read_inst_numb(GPIO_struct_t gpio_instance){
 }
 
 ///////////////////////////////////////////////////////////////
-//   Function name: Port_GPIO_read_name(GPIO_port_t port)
-//   Description: Lit et retourne le nom du port dans la structure
-//   Author: Philippe Rochefort
-//   Returns: Le nom du port
-///////////////////////////////////////////////////////////////
-char* Port_GPIO_read_name(GPIO_port_t port){
-    return port->name; 
-}
-
-///////////////////////////////////////////////////////////////
-//   Function name: Port_GPIO_read_name(GPIO_port_t port)
-//   Description: Lit et renvoie le nombre de port total dans la structure
-//   Author: Philippe Rochefort
-//   Returns: Le numéro du port
-///////////////////////////////////////////////////////////////
-int Port_GPIO_read_portnum(GPIO_port_t port){
-    return port->port_num; 
-}
-
-///////////////////////////////////////////////////////////////
 //   Function name: Port_GPIO_destruct(GPIO_port_t port)
-//   Description: Libération de mémoire pour une structure Port_GPIO
+//   Description: Libération de mémoire pour une structure gpio_config_t
+//
 //   Author: Philippe Rochefort
 //   Returns: NULL
 ///////////////////////////////////////////////////////////////
-void Port_GPIO_destroy(GPIO_port_t port){
-    free(port->name);
-    free(port->port_num);
+void Port_GPIO_destroy(gpio_config_t port){
+    free(port->pin_bit_mask);
+    free(port->mode);
+    free(port->pull_up_en);
+    free(port->pull_down_en);
+    free(port->intr_type);
     free(port);
 }
 
 ///////////////////////////////////////////////////////////////
 //   Function name: Driver_GPIO_destruct(GPIO_struct_t driver_gpio)
 //   Description: Libération pour une structure Driver_GPIO
+//
 //   Author: Philippe Rochefort
 //   Returns: NULL
 ///////////////////////////////////////////////////////////////
@@ -177,7 +280,7 @@ void Driver_GPIO_destruct(GPIO_struct_t driver_gpio){
     int i; //Variable itérative
 
     //Destruction de chacun des ports 
-    for (i=0; i < driver_gpio; i++){
+    for (i=0; i < driver_gpio->gpio_port_nb; i++){
         Port_GPIO_destroy(driver_gpio->port[i]);
     }
 
