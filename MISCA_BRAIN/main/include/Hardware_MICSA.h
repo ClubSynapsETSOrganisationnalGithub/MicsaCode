@@ -23,6 +23,24 @@
 #define BUTTON_3    18
 
 
+
+// GPIO PORT TYPES
+#define GPIO_INPUT_MODE 0
+#define GPIO_OUTPUT_MODE 1
+
+// GPIO PORT FUNCTIONALITY 
+
+#define GPIO_PUSHPULL_PULLUP_MODE           0 
+#define GPIO_PUSHPULL_PULLDOWN_MODE        88
+
+// GPIO PORT MAP DEFINITION
+
+GPIO_struct_t   BUTTON_2;
+
+// 
+
+
+
 /////////////////////////////////////////////////////////////
 //  FUNCTION PROTOTYPES
 /////////////////////////////////////////////////////////////
@@ -31,7 +49,6 @@
 /////////////////////////////////////////////////////////////
 //  FUNCTION DECLARATION
 /////////////////////////////////////////////////////////////
-
 
 
 

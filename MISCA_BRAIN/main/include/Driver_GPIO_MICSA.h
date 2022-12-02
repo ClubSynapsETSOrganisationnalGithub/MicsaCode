@@ -50,7 +50,7 @@ typedef struct GPIO_struct {
 //            
 //            
 ///////////////////////////////////////////////////////////////
-GPIO_struct_t Driver_GPIO_create_instance(int gpio_port_nb);
+GPIO_struct_t Driver_GPIO_create_instance(int gpio_port_nb, uint64_t pin_position, int MODE, int PUSHPULL_config, int INTERRUPT_TYPE);
 
 ///////////////////////////////////////////////////////////////
 //    Function name: Port_GPIO_create_instance
@@ -105,9 +105,6 @@ Driver_GPIO_PWM_(GPIO_struct_t gpio_instance, double frequency, int duty_cycle);
 /////////////////////////////////////////////////////////////
 //  FUNCTION DECLARATION
 /////////////////////////////////////////////////////////////
-
-
-
 
 
 

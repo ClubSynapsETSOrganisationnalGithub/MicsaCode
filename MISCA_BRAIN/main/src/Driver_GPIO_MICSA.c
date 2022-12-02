@@ -49,7 +49,7 @@
 //   selon le mode 
 //                        
 ///////////////////////////////////////////////////////////////
-GPIO_struct_t Driver_GPIO_create_instance(gpio_config_t* gpio_instance, int gpio_port_nb){
+GPIO_struct_t Driver_GPIO_create_instance(int gpio_port_nb, uint64_t pin_position, int MODE, int PUSHPULL_config, int INTERRUPT_TYPE){
     
     //Vérification si le tableau construit est plus grand que 1
     if(gpio_port_nb =< 0){
@@ -67,12 +67,10 @@ GPIO_struct_t Driver_GPIO_create_instance(gpio_config_t* gpio_instance, int gpio
     nouv_GPIO->instance_number = gpio_port_nb;
 
     //Allocation de mémoire pour la structure de Port 
-    nouv_GPIO->port = (gpio_config_t*)malloc((nouv_GPIO->instance_number) * sizeof(gpio_config_t));
+    nouv_GPIO->port = port_GPIO_create_instance();
 
-    //Creation de tous les ports grâce au tableau de gpio_instance
-    for(int i=0; i<gpio_port_nb; i++){
-        nouv_GPIO->port[i] = gpio_instance[i];
-    }
+
+    /// On vient d'assigner les information du port avec si PULL
 
     //Retour de la structure initialise
     return nouv_GPIO; 
@@ -86,11 +84,11 @@ GPIO_struct_t Driver_GPIO_create_instance(gpio_config_t* gpio_instance, int gpio
 //   Returns: gpio_config_t vide
 //                     
 ///////////////////////////////////////////////////////////////
-gpio_config_t port_GPIO_create_instance() {
-    gpio_config_t nouv_port;
+gpio_config_t* port_GPIO_create_instance() {
+    gpio_config_t* nouv_port;
     
     //Allocation de mémoire
-    nouv_port = (gpio_config_t)malloc(sizeof(struct gpio_config));
+    nouv_port = (gpio_config_t*)malloc(sizeof(struct gpio_config_t));
 
     //Initialiser le port en question
     if (nouv_port){
@@ -113,22 +111,24 @@ gpio_config_t port_GPIO_create_instance() {
 //   Returns: gpio_config_t possédant les variables choisies 
 //                     
 ///////////////////////////////////////////////////////////////
-gpio_config_t port_GPIO_config_init(uint64_t pin_position, int MODE, int PUSHPULL_config, int INTERRUPT_TYPE){
-    //Création de la variable acceuillant le port
-    gpio_config_t nouv_port;
 
-    //Allocation de mémoire du port 
-    nouv_port = Port_GPIO_create_instance();
+void port_GPIO_config_init(gpio_config_t* gpio__port_instance,uint64_t pin_position, int MODE, int PUSHPULL_config, int INTERRUPT_TYPE){
 
     //Initialisation de chaque valeur dans la structure port 
-    gpio_config_t_set_pin_position(nouv_port, pin_position);
-    gpio_config_t_set_mode(nouv_port, MODE);
-    gpio_config_t_set_intr_type(nouv_port, INTERRUPT_TYPE);
-    gpio_config_t_set_pullpush(nouv_port, PUSHPULL_config);
+    gpio_config_t_set_pin_position(gpio__port_instance, pin_position);
+    gpio_config_t_set_mode(gpio__port_instance, MODE);
+    gpio_config_t_set_intr_type(gpio__port_instance, INTERRUPT_TYPE);
+    gpio_config_t_set_pullpush(gpio__port_instance, PUSHPULL_config);
 
-    //Renvoie la structure initialisé avec les valeurs
-    return nouv_port;
-} 
+} ;
+
+/*étapes création d'un GPIO_struct_t
+1. crée instance du port (gpio_instance)
+2. configuration du port (gpio_instance), dire si PULL-UP, PULL-DOWN, etc...
+3. crée l'instance GPIO_struct_t et tu lui associe le port instance
+*/
+
+
 
 ///////////////////////////////////////////////////////////////
 //   Function name: gpio_config_t set functions
@@ -138,15 +138,15 @@ gpio_config_t port_GPIO_config_init(uint64_t pin_position, int MODE, int PUSHPUL
 //   Returns: NULL 
 //                     
 ///////////////////////////////////////////////////////////////
-void gpio_config_t_set_pin_position(gpio_config_t port, uint64_t pin_position){
+void gpio_config_t_set_pin_position(gpio_config_t* port, uint64_t pin_position){
     port->pin_bit_mask = pin_position;
 }
 
-void gpio_config_t_set_mode(gpio_config_t port, int mode){
+void gpio_config_t_set_mode(gpio_config_t* port, int mode){
     port->mode = mode;
 }
 
-void gpio_config_t_set_pullpush(gpio_config_t port, int PUSHPULL_config){
+void gpio_config_t_set_pullpush(gpio_config_t* port, int PUSHPULL_config){
         //Définition des deux variables
     int pull_up;
     int pull_down; 
@@ -173,7 +173,7 @@ void gpio_config_t_set_pullpush(gpio_config_t port, int PUSHPULL_config){
     nouv_port.pull_down_en = pull_down;
 }
 
-void gpio_config_t_set_intr_type(gpio_config_t port, int INTERRUPT_TYPE){
+void gpio_config_t_set_intr_type(gpio_config_t* port, int INTERRUPT_TYPE){
     port->intr_type = INTERRUPT_TYPE;
 }
 
@@ -280,7 +280,7 @@ void Driver_GPIO_destruct(GPIO_struct_t driver_gpio){
     int i; //Variable itérative
 
     //Destruction de chacun des ports 
-    for (i=0; i < driver_gpio->gpio_port_nb; i++){
+    for (i=0; i < driver_gpio-> gpio_port_nb; i++){
         Port_GPIO_destroy(driver_gpio->port[i]);
     }
 
