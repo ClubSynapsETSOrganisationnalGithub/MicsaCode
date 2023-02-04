@@ -70,5 +70,5 @@ MICSA_BRAIN/MICSA_Application/CMakeLists.txt
 MICSA_BRAIN/MICSA_Application/Makefile
 MICSA_BRAIN/MICSA_Application/README.md
 
-!MICSA_BRAIN/inc
-!MICSA_BRAIN/src
+!MICSA_BRAIN/*inc
+!MICSA_BRAIN/*src
