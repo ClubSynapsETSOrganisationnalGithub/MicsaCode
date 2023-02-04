@@ -3,7 +3,6 @@
 *  Description: This module is a Driver implementation for 
 *               the GPIO peripheral of the ESP32-S2 and is
 *               used to simplify interaction with the material.
-
 *  Author : Jacques Veneziano, Philippe Rochefort
 *  Date: 2022-11-09
 ************************************************************/
@@ -70,7 +69,8 @@ GPIO_struct_t Driver_GPIO_create_instance(int gpio_port_nb, uint64_t pin_positio
     nouv_GPIO->port = port_GPIO_create_instance();
 
 
-    /// On vient d'assigner les information du port avec si PULL
+    //On vient d'assigner les information du port avec si PULL
+
 
     //Retour de la structure initialise
     return nouv_GPIO; 
@@ -127,8 +127,6 @@ void port_GPIO_config_init(gpio_config_t* gpio__port_instance,uint64_t pin_posit
 2. configuration du port (gpio_instance), dire si PULL-UP, PULL-DOWN, etc...
 3. crée l'instance GPIO_struct_t et tu lui associe le port instance
 */
-
-
 
 ///////////////////////////////////////////////////////////////
 //   Function name: gpio_config_t set functions

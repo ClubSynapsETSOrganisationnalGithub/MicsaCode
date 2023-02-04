@@ -19,9 +19,7 @@
 //  VARIABLES & TYPES DECLARATIONS
 /////////////////////////////////////////////////////////////
 
-
 #define BUTTON_3    18
-
 
 
 // GPIO PORT TYPES
@@ -37,7 +35,6 @@
 
 GPIO_struct_t   BUTTON_2;
 
-// 
 
 
 
