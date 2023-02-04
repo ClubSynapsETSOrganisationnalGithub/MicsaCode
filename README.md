@@ -13,3 +13,7 @@ MicsaCode is the repository for the development of the code for our ESP32 based 
 # Link to programming documentation 
 
 1. Documentation expressif [ESP32-S2](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/api-reference/peripherals/adc_oneshot.html).
+
+# Drawio Code Diagram
+
+![Code exploded diagram](C:\SynapseDev\MicsaCode\images\MICSA_UML.png)
