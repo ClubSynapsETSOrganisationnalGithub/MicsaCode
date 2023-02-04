@@ -50,3 +50,22 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Expressif common doc 
+
+MICSA_BRAIN/.devcontainer
+MICSA_BRAIN/build
+MICSA_BRAIN/.vscode
+MICSA_BRAIN/components
+MICSA_BRAIN/main
+MICSA_BRAIN/CMakeLists.txt
+MICSA_BRAIN/Makefile
+MICSA_BRAIN/README.md
+MICSA_BRAIN/MICSA_Application/.devcontainer
+MICSA_BRAIN/MICSA_Application/build
+MICSA_BRAIN/MICSA_Application/.vscode
+MICSA_BRAIN/MICSA_Application/components
+MICSA_BRAIN/MICSA_Application/main
+MICSA_BRAIN/MICSA_Application/CMakeLists.txt
+MICSA_BRAIN/MICSA_Application/Makefile
+MICSA_BRAIN/MICSA_Application/README.md
