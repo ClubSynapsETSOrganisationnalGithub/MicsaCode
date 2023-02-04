@@ -61,4 +61,18 @@ MICSA_BRAIN/main
 MICSA_BRAIN/CMakeLists.txt
 MICSA_BRAIN/Makefile
 MICSA_BRAIN/README.md
+MICSA_BRAIN/MICSA_Application/.devcontainer
+MICSA_BRAIN/MICSA_Application/build
+MICSA_BRAIN/MICSA_Application/.vscode
+MICSA_BRAIN/MICSA_Application/components
+MICSA_BRAIN/MICSA_Application/main
+MICSA_BRAIN/MICSA_Application/CMakeLists.txt
+MICSA_BRAIN/MICSA_Application/Makefile
+MICSA_BRAIN/MICSA_Application/README.md
+MICSA_BRAIN/MISCA_Application
+MICSA_BRAIN\MICSA_Application
+MISCA_BRAIN/MISCA_Application
+MISCA_BRAIN\MICSA_Application
 
+!MICSA_BRAIN/*inc
+!MICSA_BRAIN/*src
