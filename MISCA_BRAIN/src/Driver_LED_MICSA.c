@@ -58,7 +58,26 @@
   *
 *******************************************************************/
 LED_struct_t Driver_LED_create_instance(IO_struct_t IO_PORT_NUMBER, LED_status_t status, double frequency, double timeout, int color){
+  //Creation de la structure
+  LED_struct_t nouv_LED;
 
+  //Allocation de memoire pour la structure LED
+  nouv_LED=(LED_struct_t)malloc(sizeof(struct LED_struct));
+
+  if(nouv_LED){
+    //Initilaisation des champs avec parameteres de la fonction
+    nouv_LED->IO_PORT_NUMBER=IO_PORT_NUMBER;
+    nouve_LED->status=status;
+    nouv_LED->frequency=frequency;
+    nouv_LED->timeout=timeout;
+    nouv_LED->color=color;
+
+    gpio_pad_select_gpio(IO_PORT_NUMBER);
+    gpio_set_direction(IO_PORT_NUMBER,0);
+  }
+
+  //Retour de la structure initialise
+  return nouv_LED;
 };
 
 
@@ -80,7 +99,26 @@ LED_struct_t Driver_LED_create_instance(IO_struct_t IO_PORT_NUMBER, LED_status_t
   *
 *******************************************************************/
 int Driver_LED_blink(LED_struct_t instance, double frequency, double timeout){
+  
+  //Verification que l'instance LED existe
+  if(instance==NULL){
+    printf("Erreur, instance LED non initialise.\n");
+    return 0;
+  }
 
+  instance->frequency=frequency;
+  instance->timeout=timeout;
+  instance->status=3;
+
+  int ON=0;
+  while(true){
+    ON=!ON;
+    gpio_set_level(instance->IO_PORT_NUMBER,ON);
+    vTaskDelay(frequency/timeout);
+  }
+  
+
+  return 1;
 };
 
 
@@ -98,7 +136,14 @@ int Driver_LED_blink(LED_struct_t instance, double frequency, double timeout){
   *
 *******************************************************************/
 int Driver_LED_set_color(LED_struct_t instance, int color){
+  //Verification que l'instance LED existe
+  if(instance==NULL){
+    printf("Erreur, instance LED non initialise.\n");
+    return 0;
+  }
 
+  instance->color=color;
+  return 1;
 };
 
 
@@ -115,7 +160,15 @@ int Driver_LED_set_color(LED_struct_t instance, int color){
   *
 *******************************************************************/
 int Driver_LED_turn_ON(LED_struct_t instance){
+  //Verification que l'instance LED existe
+  if(instance==NULL){
+    printf("Erreur, instance LED non initialise.\n");
+    return 0;
+  }
 
+  //On met le sortie du pin a HIGH
+  gpio_set_level(instance->IO_PORT_NUMBER,1);
+  return 1;
 };
 
 
@@ -132,5 +185,13 @@ int Driver_LED_turn_ON(LED_struct_t instance){
   *
 *******************************************************************/
 int Driver_LED_turn_OFF(LED_struct_t instance){
+  //Verification que l'instance LED existe
+  if(instance==NULL){
+    printf("Erreur, instance LED non initialise.\n");
+    return 0;
+  }
 
+  //On met le sortie du pin a HIGH
+  gpio_set_level(instance->IO_PORT_NUMBER,0);
+  return 1;
 };
